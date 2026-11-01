@@ -35,7 +35,7 @@
 #include <unordered_map>
 #include <vector>
 #include "MinHook.h"
-#include "rumble_tap.h"
+#include "rumble_note.h"     // our event lines into the game's vibration log (sonmat_rumble.dll does the vibration)
 
 struct FString { wchar_t* data; int32_t num, max; };
 // thiscall functions, called and hooked as fastcall (ecx = this, edx unused)
@@ -338,7 +338,7 @@ static DWORD WINAPI init(LPVOID self) {
         if (g_log == INVALID_HANDLE_VALUE)
             g_log = CreateFileA(eventFile.c_str(), FILE_APPEND_DATA, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
                                 nullptr, OPEN_ALWAYS, 0, nullptr);
-        if (!mh) { mh = MH_Initialize() == MH_OK; if (mh) rumble_tap::start(eventFile.substr(0, eventFile.find_last_of("\\/") + 1)); }
+        if (!mh) mh = MH_Initialize() == MH_OK;
         MH_STATUS st = MH_ERROR_NOT_INITIALIZED, stEnd = MH_ERROR_NOT_INITIALIZED;
         if (mh && g_toString && playAt) {
             if (cleanupAt && !g_endFilter.empty() && !g_cleanup) hook(cleanupAt, (void*)hk_cleanup, (void**)&g_cleanup, &stEnd);
